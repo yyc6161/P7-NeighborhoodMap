@@ -3,37 +3,44 @@ var locations = [
 	{
 		name: "Carnegie Hall",
 		address: "881 7th Ave, New York, NY 10019",
-		location: {lat: 40.765004, lng: -73.97985}
+		location: {lat: 40.765004, lng: -73.97985},
+		imgUrl: "img/failMessage.png"
 	},
 	{
 		name: "Central Park Zoo",
 		address: "64th St and 5th Ave, New York, NY 10021",
-		location: {lat: 40.767778, lng: -73.971833}
+		location: {lat: 40.767778, lng: -73.971833},
+		imgUrl: "img/failMessage.png"
 	},
 	{
 		name: "Webster Hall",
 		address: "125 E 11th St, New York, NY 10003",
-		location: {lat: 40.731777, lng: -73.989157}
+		location: {lat: 40.731777, lng: -73.989157},
+		imgUrl: "img/failMessage.png"
 	},
 	{
 		name: "Mercury Lounge",
 		address: "217 E Houston St, New York, NY 10002",
-		location: {lat: 40.722168, lng: -73.986746}
+		location: {lat: 40.722168, lng: -73.986746},
+		imgUrl: "img/failMessage.png"
 	},
 	{
 		name: "The Spotted Pig",
 		address: "314 W 11th St, New York, NY 10014",
-		location: {lat: 40.735607, lng: -74.006671}
+		location: {lat: 40.735607, lng: -74.006671},
+		imgUrl: "img/failMessage.png"
 	},
 	{
 		name: "Empire State Building",
 		address: "350 5th Ave, New York, NY 10118",
-		location: {lat: 40.74844, lng: -73.985655}
+		location: {lat: 40.74844, lng: -73.985655},
+		imgUrl: "img/failMessage.png"
 	},
 	{
 		name: "Tenement Museum",
 		address: "103 Orchard St, New York, NY 10002",
-		location: {lat: 40.718796, lng: -73.99007}
+		location: {lat: 40.718796, lng: -73.99007},
+		imgUrl: "img/failMessage.png"
 	}
 ];
 
@@ -50,31 +57,20 @@ function getImgFromFlickr(){
 			url: theUrl, 
 			data: JSON.stringify(), 
 			success: function(result, status){
-				if(result.stat === 'ok'){
-        		imgID = result.photos.photo[0].id;
-        		imgFarm = result.photos.photo[0].farm;
-        		imgServer = result.photos.photo[0].server;
-        		imgSecret = result.photos.photo[0].secret;
-        		location.imgUrl = "https://farm"+imgFarm+".staticflickr.com/"+imgServer+"/"+imgID+"_"+imgSecret+"_t.jpg";
-        		}else location.imgUrl = "img/failMessage.png";
+				var tag = true;
+				result.photos.photo[0].id ? imgID = result.photos.photo[0].id : tag = false;
+				result.photos.photo[0].farm ? imgFarm = result.photos.photo[0].farm : tag = false;
+				result.photos.photo[0].server ? imgServer = result.photos.photo[0].server : tag = false;
+				result.photos.photo[0].secret ? imgSecret = result.photos.photo[0].secret : tag = false;
+        		if(tag) location.imgUrl = "https://farm"+imgFarm+".staticflickr.com/"+imgServer+"/"+imgID+"_"+imgSecret+"_t.jpg";
+        		else location.imgUrl = "img/failMessage.png";
       		},
-      		fail: function(){
+      		error: function(){
       			location.imgUrl = "img/failMessage.png";
       	}});
 	});
-	
 }
 getImgFromFlickr();
-
-//This function displays the markers-list in the slide-menu
-function initLocationsList(){
-	var locationsList = $('.locations');
-	locations.forEach(function(location,i){
-		locationsList.append("<li class='location' data-bind='visible: showLocations["+i+"]'><a href='#' class='locLink' id='loc"+
-			i + "' data-bind='click: locationEvent("+i+")'>" + location.name+"</a></li>");
-	});
-}
-initLocationsList();
 
 var map;
 var markers = [];
@@ -211,6 +207,14 @@ function initMap() {
         // Create an onclick event to open an infowindow at each marker.
         marker.addListener('click', function() {
             populateInfoWindow(this, largeInfowindow);
+            //When the mouse click the marker, the marker keep bouncing,
+			//when the mouse click agein, the marker stop.
+            var tag = true;
+            if(this.getAnimation() !== null) tag = false;
+            markers.forEach(function(m){
+  				if(m.setAnimation() !== null) m.setAnimation(null);
+  			});
+  			if(tag) this.setAnimation(google.maps.Animation.BOUNCE);
         });
         bounds.extend(markers[i].position);
 
@@ -222,7 +226,19 @@ function initMap() {
         });
     }
     // Extend the boundaries of the map for each marker
-    map.fitBounds(bounds);    
+    map.fitBounds(bounds);  
+
+    google.maps.event.addDomListener(window, 'resize', function() {
+  		map.fitBounds(bounds); 
+	});  
+}
+
+/**
+ * Error callback for GMap API request
+ */
+function mapError() {
+  // Error handling
+  alert("Sorry, an error happened so the map is failed to load:(. Please check the network connection or refresh the page.");
 }
 
 /* 
@@ -272,12 +288,11 @@ function checkFilter(keyword){
 			tag = true;
 			showMarker(i);
 			bounds.extend(markers[i].position);
-			viewModel.showLocations[i](true);
+			viewModel.locationList()[i].display(true);
 		}else{
 			hideMarker(i);
-			viewModel.showLocations[i](false);
+			viewModel.locationList()[i].display(false);
 		}
-		
 	});
 	// If there is a marker that meets the requirements, fix the boundary 
 	if(tag) map.fitBounds(bounds);
@@ -301,40 +316,44 @@ var viewModel = {
 			this.toggleTag = true;
 		}
 	},
+	// This function get user input text, then pass it to function checkFilter().
 	filterKeyword: function() {
 		var keyword = $(".keyword").val();
 		checkFilter(keyword);
 	},
-	// If showLocations[i] is true, the corresponding location displays.
-    showLocations: [
-        ko.observable(true),
-        ko.observable(true),
-        ko.observable(true),
-        ko.observable(true),
-        ko.observable(true),
-        ko.observable(true),
-        ko.observable(true)
-    ],
-    // This function handles the event when the mouse encounters the locations-list
-    locationEvent: function(i){
-		$('#loc' + i).on('mouseover',function(){
-			$(this).css("color","#CDDC39");
-			markers[i].setIcon(makeMarkerIcon('D4E157'));
-		});
+	locationList: ko.observableArray([]),
+	// This function add elements to Array locationList.
+	addLocation: function() {
+		locations.forEach(function(ele,i){
+			viewModel.locationList.push({name: ele.name, id: i, click: function(){
 
-		$('#loc' + i).on('mouseout',function(){
-		 	$(this).css("color","white");
-		 	markers[i].setIcon(makeMarkerIcon('26A69A'));
-		});
+				if(viewWidth < 800){
+					viewModel.changeMenuStatus();
+				}
+				populateInfoWindow(markers[this.id], largeInfowindow);
+				// When the mouse click the location, it's marker keep bouncing,
+				// when the mouse click agein, the marker stop.
+				var tag = true;
+            	if(markers[this.id].getAnimation() !== null) tag = false;
+            	markers.forEach(function(m){
+  					if(m.setAnimation() !== null) m.setAnimation(null);
+  				});
+  				if(tag) markers[this.id].setAnimation(google.maps.Animation.BOUNCE);
 
-		$('#loc' + i).on('click',function(){
-			if(viewWidth < 800){
-				viewModel.changeMenuStatus();
-			}
-			populateInfoWindow(markers[i], largeInfowindow);
+			},mouseover: function(){
+			// This function will change color of location's name and corresponding marker
+				this.color('#CDDC39'); 
+				markers[this.id].setIcon(makeMarkerIcon('D4E157'));
+
+			},mouseout: function(){
+				this.color('white');
+				markers[this.id].setIcon(makeMarkerIcon('26A69A'));
+
+			},display: ko.observable(true),color: ko.observable('white')});
 		});
-    }
+    },  
  };
+viewModel.addLocation();
 ko.applyBindings(viewModel);
 
 // If the screen width is greater than 1000px, 

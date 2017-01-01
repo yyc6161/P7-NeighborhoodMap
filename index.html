@@ -7,32 +7,37 @@
 
   	<link rel="stylesheet" href="css/icomoon.css">
   	<link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
-  	<link rel="stylesheet" type="text/css" href="css/style.css">
+  	<link rel="stylesheet" href="css/style.css">
 
   </head>
   <body>
-  	<div id="header">
+  	<header id="header">
   	    <a href="#" class="menu-icon-link" data-bind="click: changeMenuStatus">
             <i class="icon-list"></i>
         </a>
         <p class="city">New York</p>
-  	</div>
+  	</header>
 
-  	<div id="menu" data-bind="attr: {class: menuStatus}">
+  	<aside id="menu" data-bind="attr: {class: menuStatus}">
   		<div class="keyword-input">
   			<input type="text" class="keyword"><button id="filterButton" data-bind="click: filterKeyword">Filter</button>
   		</div>
-  		<ul class="locations" style="padding: 0;"></ul>
-  	</div>
+  		<ul class="locations" style="padding: 0;" data-bind="foreach: locationList">
+  			<li class='location' data-bind='visible: display'>
+  				<a href='#' data-bind='click: click ,text: name,style: {color: color}, event:{ mouseover: mouseover, mouseout: mouseout}'></a>
+			</li>
+  		</ul>
+  	</aside>
 
-  	<div id="map"></div>
+  	<main id="map"></main>
 
   	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   	<script src="http://knockoutjs.com/downloads/knockout-3.4.1.js"></script>
+  	<script src="js/script.js"></script>
   	<script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDXG4nAHRvU48qTQcaNWYegKRdnUvgDkWM&v=3&callback=initMap">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDXG4nAHRvU48qTQcaNWYegKRdnUvgDkWM&v=3&callback=initMap" onerror="mapError()">
     </script>
-    <script type="text/javascript" src="js/script.js"></script>
+    
 
   </body>
 </html>

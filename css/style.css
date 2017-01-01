@@ -4,18 +4,31 @@ body {
 	margin: 0;
 	height: 100%;
 }
+
 a {
 	text-decoration: none;
 	color: #111;
 }
+
 *,
 *:after,
 *:before: {
     box-sizing: inherit;
 }
+
 body {
 	font-family: 'PT Sans', sans-serif;
 	box-sizing: border-box;
+}
+
+li {
+	list-style-type: none;
+	font-size: 25px;
+	margin: 5px;
+	padding: 6px 14px;
+}
+a {
+	color: white;
 }
 
 #map {
@@ -73,13 +86,4 @@ body {
 	transform: translate3d(-300px, 0, 0);
 }
 
-li {
-	list-style-type: none;
-	font-size: 25px;
-	margin: 5px;
-	padding: 6px 14px;
-}
-a {
-	color: white;
-}
 
