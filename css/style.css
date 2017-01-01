@@ -1,0 +1,85 @@
+html,
+body {
+	padding: 0;
+	margin: 0;
+	height: 100%;
+}
+a {
+	text-decoration: none;
+	color: #111;
+}
+*,
+*:after,
+*:before: {
+    box-sizing: inherit;
+}
+body {
+	font-family: 'PT Sans', sans-serif;
+	box-sizing: border-box;
+}
+
+#map {
+	height: calc(100% - 61px);
+}
+
+#header {
+	display: flex;
+	background-color: #00695C;
+	color: white;
+	height:auto;
+}
+
+.city,
+.menu-icon-link{
+	float: left;
+	padding: 9px 9px;
+	margin: 0;
+	font-size: 28px;
+}
+
+.icon-list {
+	font-size: 38px;
+	margin: 0 6px;
+    color: #FFF;
+}
+
+#menu {
+	position: absolute;
+	background-color: rgba(0,105,92,0.8);
+	width: 300px;
+	height: calc(100% - 61px);
+    transition: transform 0.2s;
+    z-index: 2;
+}
+
+.keyword-input {
+	margin-top: 10px;
+	display: flex;
+	width: 100%;
+}
+.keyword-input input{
+	height: 30px;
+	width: 75%;
+	font-size: 20px;
+	padding-left: 14px;
+}
+.keyword-input button{
+	background-color: #CDDC39;
+	font-size: 20px;
+	width: 25%;
+}
+
+.menu-hidden {
+	transform: translate3d(-300px, 0, 0);
+}
+
+li {
+	list-style-type: none;
+	font-size: 25px;
+	margin: 5px;
+	padding: 6px 14px;
+}
+a {
+	color: white;
+}
+
