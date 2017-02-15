@@ -1,8 +1,10 @@
 ##Neighborhood Map
 This is a website could show you neighborhood map in New York by google map.
 
-###How to run it
-Open the `index.html` in browser or anyone appropriate editor
+###Usage
+
+* Click here: [http://yinyuchen.site/projects/P1-NeighborhoodMap/index.html](http://yinyuchen.site/projects/P1-NeighborhoodMap/index.html) 
+* Open the `index.html` in browser or anyone appropriate editor
 
 ###Featured
 
